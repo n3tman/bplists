@@ -1,7 +1,3 @@
-$(function() {
-    //
-});
-
 Dropzone.options.upload = {
     init: function() {
         this.on('addedfile', function (file) {
@@ -31,5 +27,4 @@ Dropzone.options.upload = {
     thumbnailWidth: 200,
     thumbnailHeight: 200,
     dictDefaultMessage: 'Drop your <b>.bplist</b> here<br>(or click to choose a file)',
-    // autoProcessQueue: false
 };

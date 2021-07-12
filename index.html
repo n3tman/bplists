@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/dropzone.min.css">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@vizuaalog/bulmajs@0.12.1/dist/bulma.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/dropzone.min.js"></script>
     <script src="script.js"></script>
 </head>
@@ -23,6 +21,35 @@
         </p>
 
         <form action="/" class="dropzone" id="upload"></form>
+
+        <form id="main-form" class="mt-5">
+            <div class="columns mb-0">
+                <div class="field column is-three-quarters">
+                    <label class="label">Playlist Title</label>
+                    <div class="control">
+                        <input class="input" type="text" name="title" placeholder="Playlist Title" required>
+                    </div>
+                </div>
+
+                <div class="field column">
+                    <label class="label">Playlist Author</label>
+                    <div class="control">
+                        <input class="input" type="text" name="author" placeholder="Playlist Author" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label">Description</label>
+                <div class="control">
+                    <textarea class="textarea" name="description" placeholder="Description" minlength="20" required></textarea>
+                </div>
+            </div>
+
+            <div class="control mt-5">
+                <button class="button is-info is-large is-fullwidth">Submit</button>
+            </div>
+        </form>
     </div>
 </section>
 </body>
