@@ -3,18 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello Bulma!</title>
+    <title>BSaber Playlist Formatter</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/dropzone.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vizuaalog/bulmajs@0.12.1/dist/bulma.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/dropzone.min.js"></script>
+    <script src="script.js"></script>
 </head>
 <body>
 <section class="section">
     <div class="container">
         <h1 class="title">
-            Hello World
+            BSaber Playlist Formatter
         </h1>
         <p class="subtitle">
-            My first website with <strong>Bulma</strong>!
+            Use the form below to check and auto-format your <strong>.bplist</strong> (Beat Saber playlist) files before uploading them to BSaber.
         </p>
+
+        <form action="/" class="dropzone" id="upload"></form>
     </div>
 </section>
 </body>
