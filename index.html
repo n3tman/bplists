@@ -39,6 +39,48 @@
                 </div>
             </div>
 
+            <div class="columns mb-0">
+                <div class="field column">
+                    <label class="label">Playlist Category</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="category">
+                                <option value="Genre">Genre — all songs have the same or similar genre</option>
+                                <option value="Artist">Artist — all tracks are from a single artist</option>
+                                <option value="Dance">Dance — maps with a great flow, dance-oriented</option>
+                                <option value="Event">Event — dedicated to holidays and contests</option>
+                                <option value="Anime">Anime — songs from anime shows/movies/games</option>
+                                <option value="OST">OST — original soundtracks from tv/movies/games</option>
+                                <option value="Personal">Personal — different picks from players and curators</option>
+                                <option value="Regional">Regional — packs of international songs</option>
+                                <option value="Misc" selected>Misc — everything else</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field column">
+                    <label class="label">Playlist Date</label>
+                    <div class="control">
+                        <input class="input" type="date" name="date" required>
+                    </div>
+                </div>
+
+                <div class="field column">
+                    <label class="label">Song Count</label>
+                    <div class="control">
+                        <input class="input" type="number" name="songs" min="1" required>
+                    </div>
+                </div>
+
+                <div class="field column">
+                    <label class="label">Mapper Count</label>
+                    <div class="control">
+                        <input class="input" type="number" name="mappers" min="1" required>
+                    </div>
+                </div>
+            </div>
+
             <div class="field">
                 <label class="label">Description</label>
                 <div class="control">
