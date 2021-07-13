@@ -70,7 +70,7 @@ async function processSongs(json) {
 
             if (curNum === 0) {
                 if (errors.length === 0) {
-                    statusText.value = 'Done! Sending formatted file back to you. Don\'t forget to copy API text below to the Discord.';
+                    statusText.value = 'Done! Sending formatted file back to you. Don\'t forget to copy API text below and paste it to the Discord.';
                 } else {
                     statusText.style.color = '#c83838';
                     statusText.value = 'Done with errors. Some maps are probably unavailable. Hashes: ' + errors.join(', ');
@@ -217,7 +217,7 @@ Dropzone.options.thumb = {
     acceptedFiles: 'image/*',
     maxFilesize: 0.04, // MB
     addRemoveLinks: true,
-    dictDefaultMessage: 'Drop a small 300x300px cover here<br>(or click to choose a file)'
+    dictDefaultMessage: 'Drop a small 300x300px cover image here<br>(or click to choose a file)'
 };
 
 document.addEventListener('DOMContentLoaded', function () {

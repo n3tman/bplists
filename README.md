@@ -1,2 +1,2 @@
 # bplists
-Some Beat Saber playlists
+BSaber Playlist Formatter
