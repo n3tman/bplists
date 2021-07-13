@@ -7,6 +7,10 @@ body > .section {
     background-color: #e8e8e8;
 }
 
+.progress::-webkit-progress-value {
+    transition: width 0.5s ease;
+}
+
 .title:not(.is-spaced)+.subtitle {
     margin-top: -1rem;
 }

@@ -1,3 +1,38 @@
+var songArray = [];
+
+function sleep(ms) {
+    return new Promise(
+        resolve => setTimeout(resolve, ms)
+    );
+}
+
+async function asyncForEach(arr, callback, ms) {
+    for (var item of arr) {
+        await sleep(ms);
+        callback(item);
+    }
+}
+
+async function processSongs(songs) {
+    var songNum = songs.length;
+    var curNum = songNum;
+    var apiText = document.querySelector('#api');
+    var progress = document.querySelector('#progress');
+    var statusText = document.querySelector('#status');
+    var apiUrl = 'https://beatsaver.com/api/maps/by-hash/';
+
+    await asyncForEach(songs, function (song) {
+        // console.log(song);
+        curNum--;
+        progress.value = Math.round((songNum - curNum) * 100 / songNum)
+        statusText.value = 'Fetching info from BeatSaver [' + (songNum - curNum) + '/' + songNum + ']';
+    }, 500);
+
+    statusText.value = 'Done! Sending formatted file back to you. Don\'t forget to copy API text below to the Discord.';
+
+    apiText.scrollIntoView({behavior: 'smooth', block: 'end'});
+}
+
 function processPlaylist(json, name) {
     if (json.hasOwnProperty('image') && json.image.trim()) {
         document.querySelector('.dz-image > img').src = json.image;
@@ -26,6 +61,7 @@ function processPlaylist(json, name) {
 
     if (json.hasOwnProperty('songs') && json.songs.length) {
         document.querySelector('#songs').value = json.songs.length;
+        songArray = json.songs;
     }
 }
 
@@ -42,6 +78,7 @@ Dropzone.options.upload = {
                 item.value = '';
             });
             document.querySelector('#category').value = 'Misc';
+            document.querySelector('#progress').value = 0;
         });
     },
     accept: function(file, done) {
@@ -89,16 +126,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var listFiles = document.querySelector('#upload').dropzone.files;
         var thumbFiles = document.querySelector('#thumb').dropzone.files;
-        var apiText = document.querySelector('#api');
+        var statusText = document.querySelector('#status');
 
         if (listFiles.length === 0 || listFiles[0].status === 'error') {
-            apiText.value = 'Error! Please select a valid .bplist first';
+            statusText.style.color = '#c83838';
+            statusText.value = 'Error! Please select a valid .bplist first';
         } else if (thumbFiles.length === 0 || thumbFiles[0].status === 'error') {
-            apiText.value = 'Error! Please select a small cover first (file size should be under 40 KB)';
+            statusText.style.color = '#c83838';
+            statusText.value = 'Error! Please select a small cover first (file size should be under 40 KB)';
         } else {
-            console.log('all good!');
+            statusText.removeAttribute('style');
+            statusText.value = '';
+            processSongs(songArray);
         }
-
-        apiText.scrollIntoView({behavior: 'smooth', block: 'end'});
     });
 });
