@@ -147,7 +147,8 @@ body > .section {
     height: 32px;
 }
 
-.dz-preview:not(.dz-error) .dz-success-mark {
+.dz-preview:not(.dz-error) .dz-success-mark,
+.dropzone .dz-preview .dz-details {
     opacity: 1;
 }
 

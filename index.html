@@ -27,14 +27,14 @@
                 <div class="field column is-three-quarters">
                     <label class="label">Playlist Title</label>
                     <div class="control">
-                        <input class="input" type="text" name="title" placeholder="Playlist Title" required>
+                        <input class="input" type="text" name="title" id="title" placeholder="Playlist Title" required>
                     </div>
                 </div>
 
                 <div class="field column">
                     <label class="label">Playlist Author</label>
                     <div class="control">
-                        <input class="input" type="text" name="author" placeholder="Playlist Author" required>
+                        <input class="input" type="text" name="author" id="author" placeholder="Playlist Author" required>
                     </div>
                 </div>
             </div>
@@ -44,12 +44,12 @@
                     <label class="label">Playlist Category</label>
                     <div class="control">
                         <div class="select is-fullwidth">
-                            <select name="category">
+                            <select name="category" id="category">
                                 <option value="Genre">Genre — all songs have the same or a similar genre</option>
                                 <option value="Artist">Artist — all tracks are from a single artist</option>
                                 <option value="Dance">Dance — maps with a great flow or dance-oriented</option>
                                 <option value="Event">Event — dedicated to holidays and contests</option>
-                                <option value="Anime">Anime — songs from anime shows/movies/games</option>
+                                <option value="Anime">Anime — JP songs from anime shows/movies/games</option>
                                 <option value="OST">OST — original soundtracks from tv/movies/games</option>
                                 <option value="Personal">Personal — different picks from players and curators</option>
                                 <option value="Regional">Regional — international songs from other countries</option>
@@ -62,21 +62,21 @@
                 <div class="field column">
                     <label class="label">Playlist Date</label>
                     <div class="control">
-                        <input class="input" type="date" name="date" required>
+                        <input class="input" type="date" name="date" id="date" required>
                     </div>
                 </div>
 
                 <div class="field column">
                     <label class="label">Song Count</label>
                     <div class="control">
-                        <input class="input" type="number" name="songs" min="1" required>
+                        <input class="input" type="number" name="songs" id="songs" placeholder="Auto-filled" readonly>
                     </div>
                 </div>
 
                 <div class="field column">
                     <label class="label">Mapper Count</label>
                     <div class="control">
-                        <input class="input" type="number" name="mappers" min="1" required>
+                        <input class="input" type="number" name="mappers" id="mappers" placeholder="Auto-filled" readonly>
                     </div>
                 </div>
             </div>
@@ -85,7 +85,7 @@
                 <div class="column field">
                     <label class="label">Description</label>
                     <div class="control">
-                        <textarea class="textarea" name="description" placeholder="Description" minlength="20" required></textarea>
+                        <textarea class="textarea" name="description" id="desc" placeholder="Description" minlength="20" required></textarea>
                     </div>
                 </div>
                 <div class="column field">
@@ -101,7 +101,7 @@
             <div class="field mt-5">
                 <label class="label">Playlist API</label>
                 <div class="control">
-                    <textarea class="textarea" name="api" placeholder="Generated text for playlistAPI file" minlength="20" onclick="this.select()"></textarea>
+                    <textarea class="textarea" name="api" id="api" placeholder="Generated text for playlistAPI file" minlength="20" onclick="this.select()"></textarea>
                 </div>
             </div>
         </form>

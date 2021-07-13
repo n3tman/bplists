@@ -1,3 +1,30 @@
+function processPlaylist(json, name) {
+    if (json.hasOwnProperty('image') && json.image.trim()) {
+        document.querySelector('.dz-image > img').src = json.image;
+    }
+    if (json.hasOwnProperty('playlistTitle') && json.playlistTitle.trim()) {
+        document.querySelector('#title').value = json.playlistTitle.trim();
+    }
+    if (json.hasOwnProperty('playlistAuthor') && json.playlistAuthor.trim()) {
+        document.querySelector('#author').value = json.playlistAuthor.trim();
+    }
+    if (json.hasOwnProperty('playlistDescription') && json.playlistDescription.trim()) {
+        document.querySelector('#desc').value = json.playlistDescription.trim();
+    }
+
+    var dateStr = name.match(/^((\d+)-\d+-\d+).*/);
+
+    if (dateStr) {
+        if (dateStr[2].length < 3) {
+            dateStr[1] = '20' + dateStr[1];
+        }
+        date = new Date(dateStr[1])
+    } else {
+        date = new Date();
+    }
+    document.querySelector('#date').value = date.toISOString().substring(0,10);
+}
+
 Dropzone.options.upload = {
     url: '/',
     init: function() {
@@ -5,6 +32,12 @@ Dropzone.options.upload = {
             if (this.files.length > 1) {
                 this.removeFile(this.files[0]);
             }
+        });
+        this.on('removedfile', function () {
+            document.querySelectorAll('input, textarea').forEach(function(item) {
+                item.value = '';
+            });
+            document.querySelector('#category').value = 'Misc';
         });
     },
     accept: function(file, done) {
@@ -14,9 +47,7 @@ Dropzone.options.upload = {
             var json = {};
             try {
                 json = JSON.parse(result);
-                if (json.hasOwnProperty('image') && json.image.trim()) {
-                    document.querySelector('.dz-image > img').src = json.image;
-                }
+                processPlaylist(json, file.name);
             } catch(e) {
                 done('Invalid playlist file');
             }
@@ -47,4 +78,3 @@ Dropzone.options.thumb = {
     addRemoveLinks: true,
     dictDefaultMessage: 'Drop a small 300x300px cover here<br>(or click to choose a file)',
 };
-
