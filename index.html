@@ -20,7 +20,7 @@
             Drop your <strong>.bplist</strong> file (Beat Saber playlist) below to check and auto-format it before uploading to BSaber.
         </p>
 
-        <form action="/" class="dropzone" id="upload"></form>
+        <div class="dropzone" id="upload"></div>
 
         <form id="main-form" class="mt-5">
             <div class="columns mb-0">
@@ -45,14 +45,14 @@
                     <div class="control">
                         <div class="select is-fullwidth">
                             <select name="category">
-                                <option value="Genre">Genre — all songs have the same or similar genre</option>
+                                <option value="Genre">Genre — all songs have the same or a similar genre</option>
                                 <option value="Artist">Artist — all tracks are from a single artist</option>
-                                <option value="Dance">Dance — maps with a great flow, dance-oriented</option>
+                                <option value="Dance">Dance — maps with a great flow or dance-oriented</option>
                                 <option value="Event">Event — dedicated to holidays and contests</option>
                                 <option value="Anime">Anime — songs from anime shows/movies/games</option>
                                 <option value="OST">OST — original soundtracks from tv/movies/games</option>
                                 <option value="Personal">Personal — different picks from players and curators</option>
-                                <option value="Regional">Regional — packs of international songs</option>
+                                <option value="Regional">Regional — international songs from other countries</option>
                                 <option value="Misc" selected>Misc — everything else</option>
                             </select>
                         </div>
@@ -81,15 +81,28 @@
                 </div>
             </div>
 
-            <div class="field">
-                <label class="label">Description</label>
-                <div class="control">
-                    <textarea class="textarea" name="description" placeholder="Description" minlength="20" required></textarea>
+            <div class="columns mb-0">
+                <div class="column field">
+                    <label class="label">Description</label>
+                    <div class="control">
+                        <textarea class="textarea" name="description" placeholder="Description" minlength="20" required></textarea>
+                    </div>
+                </div>
+                <div class="column field">
+                    <label class="label">Small Cover</label>
+                    <div class="dropzone thumb" id="thumb"></div>
                 </div>
             </div>
 
-            <div class="control mt-5">
+            <div class="control submit">
                 <button class="button is-info is-large is-fullwidth">Submit</button>
+            </div>
+
+            <div class="field mt-5">
+                <label class="label">Playlist API</label>
+                <div class="control">
+                    <textarea class="textarea" name="api" placeholder="Generated text for playlistAPI file" minlength="20" onclick="this.select()"></textarea>
+                </div>
             </div>
         </form>
     </div>

@@ -1,6 +1,7 @@
 Dropzone.options.upload = {
+    url: '/',
     init: function() {
-        this.on('addedfile', function (file) {
+        this.on('addedfile', function () {
             if (this.files.length > 1) {
                 this.removeFile(this.files[0]);
             }
@@ -28,3 +29,22 @@ Dropzone.options.upload = {
     thumbnailHeight: 200,
     dictDefaultMessage: 'Drop your <b>.bplist</b> here<br>(or click to choose a file)',
 };
+
+Dropzone.options.thumb = {
+    url: '/',
+    init: function() {
+        this.on('addedfile', function () {
+            if (this.files.length > 1) {
+                this.removeFile(this.files[0]);
+            }
+        });
+    },
+    accept: function(file, done) {
+        console.log(file);
+    },
+    acceptedFiles: 'image/*',
+    maxFilesize: 0.04, // MB
+    addRemoveLinks: true,
+    dictDefaultMessage: 'Drop a small 300x300px cover here<br>(or click to choose a file)',
+};
+
