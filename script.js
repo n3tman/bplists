@@ -1,4 +1,5 @@
-var songArray = [];
+var listJson = {};
+var thumbImage = '';
 
 function sleep(ms) {
     return new Promise(function (resolve) {
@@ -13,21 +14,23 @@ async function asyncForEach(arr, callback, ms) {
     }
 }
 
-async function processSongs(songs) {
-    var songNum = songs.length;
+async function processSongs(json) {
+    var songNum = json.songs.length;
     var curNum = songNum;
     var apiText = document.querySelector('#api');
     var progress = document.querySelector('#progress');
     var statusText = document.querySelector('#status');
     var submit = document.querySelector('#submit');
     var apiUrl = 'https://beatsaver.com/api/maps/by-hash/';
+    var listPath = 'https://bsaber.com/PlaylistAPI/';
 
     var songList = [];
     var errors = [];
+    var mappers = [];
 
     submit.classList.add('is-loading');
 
-    await asyncForEach(songs, function (song) {
+    await asyncForEach(json.songs, function (song) {
         var hash = song.hash;
         console.log(hash);
 
@@ -55,6 +58,10 @@ async function processSongs(songs) {
                 }
 
                 songList.push(resultSong);
+
+                if (!mappers.includes(data.uploader.username)) {
+                    mappers.push(data.uploader.username);
+                }
             } else {
                 songList.push({
                     'name': '### ERROR ###',
@@ -71,7 +78,41 @@ async function processSongs(songs) {
         statusText.value = 'Done with errors. Some maps are probably unavailable. Hashes: ' + errors.join(', ');
     }
 
-    console.log(songList);
+    document.querySelector('#mappers').value = mappers.length;
+
+    var title = document.querySelector('#title').value.trim();
+    var author = document.querySelector('#author').value.trim();
+    var description = document.querySelector('#desc').value.trim();
+    var date = document.querySelector('#date').value;
+    var category = document.querySelector('#category').value;
+    var image = listJson.hasOwnProperty('image') ? listJson.image : '';
+
+    var fileUrl = listPath + date + '.json';
+
+    var resultPlaylist = {
+        'playlistTitle': title,
+        'playlistAuthor': author,
+        'playlistDescription': description,
+        'syncURL': fileUrl,
+        'songs': songList,
+        'image': image
+    }
+
+    console.log(resultPlaylist);
+
+    var apiJson = {
+        'playlistTitle': title,
+        'playlistAuthor': author,
+        'playlistDescription': description,
+        'playlistURL': fileUrl,
+        'playlistDate': date,
+        'playlistCategory': category,
+        'playlistSongCount': songNum,
+        'playlistMapperCount': mappers.length,
+        'image': thumbImage
+    }
+
+    console.log(apiJson);
 
     submit.classList.remove('is-loading');
 
@@ -106,8 +147,9 @@ function processPlaylist(json, name) {
 
     if (json.hasOwnProperty('songs') && json.songs.length) {
         document.querySelector('#songs').value = json.songs.length;
-        songArray = json.songs;
     }
+
+    listJson = json;
 }
 
 Dropzone.options.upload = {
@@ -158,7 +200,11 @@ Dropzone.options.thumb = {
         });
     },
     accept: function (file, done) {
-        // nothing
+        var reader = new FileReader();
+        reader.addEventListener('load', function () {
+            thumbImage = reader.result;
+        });
+        reader.readAsDataURL(file);
     },
     acceptedFiles: 'image/*',
     maxFilesize: 0.04, // MB
@@ -177,13 +223,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (listFiles.length === 0 || listFiles[0].status === 'error') {
             statusText.style.color = '#c83838';
             statusText.value = 'Error! Please select a valid .bplist first';
-            // } else if (thumbFiles.length === 0 || thumbFiles[0].status === 'error') {
-            //     statusText.style.color = '#c83838';
-            //     statusText.value = 'Error! Please select a small cover first (file size should be under 40 KB)';
+        } else if (thumbFiles.length === 0 || thumbFiles[0].status === 'error') {
+            statusText.style.color = '#c83838';
+            statusText.value = 'Error! Please select a small cover first (file size should be under 40 KB)';
         } else {
             statusText.removeAttribute('style');
             statusText.value = '';
-            processSongs(songArray);
+            processSongs(listJson);
         }
     });
 });
