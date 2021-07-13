@@ -174,7 +174,11 @@ Dropzone.options.upload = {
             document.querySelector('#category').value = 'Misc';
             document.querySelector('#progress').value = 0;
             document.querySelector('#status').removeAttribute('style');
-            document.querySelector('.thumb .dz-remove').click();
+
+            var thumbRemove = document.querySelector('.thumb .dz-remove');
+            if (thumbRemove) {
+                thumbRemove.click();
+            }
         });
     },
     accept: function (file, done) {
