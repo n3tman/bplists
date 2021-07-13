@@ -23,6 +23,10 @@ function processPlaylist(json, name) {
         date = new Date();
     }
     document.querySelector('#date').value = date.toISOString().substring(0,10);
+
+    if (json.hasOwnProperty('songs') && json.songs.length) {
+        document.querySelector('#songs').value = json.songs.length;
+    }
 }
 
 Dropzone.options.upload = {
@@ -71,10 +75,30 @@ Dropzone.options.thumb = {
         });
     },
     accept: function(file, done) {
-        console.log(file);
+        // nothing
     },
     acceptedFiles: 'image/*',
     maxFilesize: 0.04, // MB
     addRemoveLinks: true,
     dictDefaultMessage: 'Drop a small 300x300px cover here<br>(or click to choose a file)',
 };
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('#form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var listFiles = document.querySelector('#upload').dropzone.files;
+        var thumbFiles = document.querySelector('#thumb').dropzone.files;
+        var apiText = document.querySelector('#api');
+
+        if (listFiles.length === 0 || listFiles[0].status === 'error') {
+            apiText.value = 'Error! Please select a valid .bplist first';
+        } else if (thumbFiles.length === 0 || thumbFiles[0].status === 'error') {
+            apiText.value = 'Error! Please select a small cover first (file size should be under 40 KB)';
+        } else {
+            console.log('all good!');
+        }
+
+        apiText.scrollIntoView({behavior: 'smooth', block: 'end'});
+    });
+});

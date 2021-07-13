@@ -22,7 +22,7 @@
 
         <div class="dropzone" id="upload"></div>
 
-        <form id="main-form" class="mt-5">
+        <form id="form" class="mt-5">
             <div class="columns mb-0">
                 <div class="field column is-three-quarters">
                     <label class="label">Playlist Title</label>
@@ -76,7 +76,7 @@
                 <div class="field column">
                     <label class="label">Mapper Count</label>
                     <div class="control">
-                        <input class="input" type="number" name="mappers" id="mappers" placeholder="Auto-filled" readonly>
+                        <input class="input" type="number" name="mappers" id="mappers" placeholder="Auto-filled after submit" readonly>
                     </div>
                 </div>
             </div>
@@ -101,7 +101,7 @@
             <div class="field mt-5">
                 <label class="label">Playlist API</label>
                 <div class="control">
-                    <textarea class="textarea" name="api" id="api" placeholder="Generated text for playlistAPI file" minlength="20" onclick="this.select()"></textarea>
+                    <textarea class="textarea" name="api" id="api" placeholder="Generated code will appear here. Please copy it and send to BSaber Discord - #playlist-discussion" minlength="20" onclick="this.select()"></textarea>
                 </div>
             </div>
         </form>
