@@ -31,8 +31,7 @@ async function processSongs(json) {
     submit.classList.add('is-loading');
 
     await asyncForEach(json.songs, function (song) {
-        var hash = song.hash;
-        console.log(hash);
+        var hash = song.hash.toLowerCase();
 
         curNum--;
         progress.value = Math.round((songNum - curNum) * 100 / songNum)
@@ -68,55 +67,63 @@ async function processSongs(json) {
                     'hash': hash
                 });
             }
+
+            if (curNum === 0) {
+                if (errors.length === 0) {
+                    statusText.value = 'Done! Sending formatted file back to you. Don\'t forget to copy API text below to the Discord.';
+                } else {
+                    statusText.style.color = '#c83838';
+                    statusText.value = 'Done with errors. Some maps are probably unavailable. Hashes: ' + errors.join(', ');
+                }
+
+                document.querySelector('#mappers').value = mappers.length;
+
+                var title = document.querySelector('#title').value.trim();
+                var author = document.querySelector('#author').value.trim();
+                var description = document.querySelector('#desc').value.trim();
+                var date = document.querySelector('#date').value;
+                var category = document.querySelector('#category').value;
+                var image = listJson.hasOwnProperty('image') ? listJson.image : '';
+
+                var fileName = date.substring(2) + '_' + slugify(title, {lower: true, strict: true}) +
+                    '_' + slugify(author, {lower: true, strict: true}) + '.bplist';
+                var fileUrl = listPath + fileName;
+
+                var resultPlaylist = {
+                    'playlistTitle': title,
+                    'playlistAuthor': author,
+                    'playlistDescription': description,
+                    'syncURL': fileUrl,
+                    'songs': songList,
+                    'image': image
+                }
+
+                var blob = new Blob(
+                    [JSON.stringify(resultPlaylist, null, 4)],
+                    {type: 'text/plain;charset=utf-8'}
+                );
+                saveAs(blob, fileName);
+
+                var apiJson = {
+                    'playlistTitle': title,
+                    'playlistAuthor': author,
+                    'playlistDescription': description,
+                    'playlistURL': fileUrl,
+                    'playlistDate': date,
+                    'playlistCategory': category,
+                    'playlistSongCount': songNum,
+                    'playlistMapperCount': mappers.length,
+                    'image': thumbImage
+                }
+
+                apiText.value = JSON.stringify(apiJson, null, 4);
+
+                submit.classList.remove('is-loading');
+
+                apiText.scrollIntoView({behavior: 'smooth', block: 'end'});
+            }
         });
     }, 2000);
-
-    if (errors.length === 0) {
-        statusText.value = 'Done! Sending formatted file back to you. Don\'t forget to copy API text below to the Discord.';
-    } else {
-        statusText.style.color = '#c83838';
-        statusText.value = 'Done with errors. Some maps are probably unavailable. Hashes: ' + errors.join(', ');
-    }
-
-    document.querySelector('#mappers').value = mappers.length;
-
-    var title = document.querySelector('#title').value.trim();
-    var author = document.querySelector('#author').value.trim();
-    var description = document.querySelector('#desc').value.trim();
-    var date = document.querySelector('#date').value;
-    var category = document.querySelector('#category').value;
-    var image = listJson.hasOwnProperty('image') ? listJson.image : '';
-
-    var fileUrl = listPath + date + '.json';
-
-    var resultPlaylist = {
-        'playlistTitle': title,
-        'playlistAuthor': author,
-        'playlistDescription': description,
-        'syncURL': fileUrl,
-        'songs': songList,
-        'image': image
-    }
-
-    console.log(resultPlaylist);
-
-    var apiJson = {
-        'playlistTitle': title,
-        'playlistAuthor': author,
-        'playlistDescription': description,
-        'playlistURL': fileUrl,
-        'playlistDate': date,
-        'playlistCategory': category,
-        'playlistSongCount': songNum,
-        'playlistMapperCount': mappers.length,
-        'image': thumbImage
-    }
-
-    console.log(apiJson);
-
-    submit.classList.remove('is-loading');
-
-    apiText.scrollIntoView({behavior: 'smooth', block: 'end'});
 }
 
 function processPlaylist(json, name) {
@@ -167,6 +174,7 @@ Dropzone.options.upload = {
             document.querySelector('#category').value = 'Misc';
             document.querySelector('#progress').value = 0;
             document.querySelector('#status').removeAttribute('style');
+            document.querySelector('.thumb .dz-remove').click();
         });
     },
     accept: function (file, done) {

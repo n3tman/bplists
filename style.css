@@ -158,4 +158,5 @@ body > .section {
 
 .control > .textarea:not([rows]) {
     min-height: 156px;
+    font-family: monospace;
 }
