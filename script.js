@@ -37,7 +37,11 @@ async function processSongs(json) {
         progress.value = Math.round((songNum - curNum) * 100 / songNum)
         statusText.value = 'Fetching info from BeatSaver [' + (songNum - curNum) + '/' + songNum + ']';
 
-        fetch(apiUrl + hash).then(function (response) {
+        fetch(apiUrl + hash, {
+            headers: {
+                'User-Agent': 'BSaberPlaylistFormatter (+https://github.com/n3tman/bplists)'
+            }
+        }).then(function (response) {
             if (!response.ok) {
                 errors.push(hash);
             } else {
