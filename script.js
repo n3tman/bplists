@@ -21,7 +21,7 @@ async function processSongs(json) {
     var progress = document.querySelector('#progress');
     var statusText = document.querySelector('#status');
     var submit = document.querySelector('#submit');
-    var apiUrl = 'https://beatsaver.com/api/maps/by-hash/';
+    var apiUrl = 'https://api.beatsaver.com/maps/hash/';
     var listPath = 'https://bsaber.com/PlaylistAPI/';
 
     var songList = [];
@@ -46,10 +46,10 @@ async function processSongs(json) {
         }).then(function (data) {
             if (data) {
                 var resultSong = {
-                    'key': data.key,
+                    'key': data.id,
                     'hash': hash,
                     'name': data.name,
-                    'uploader': data.uploader.username
+                    'uploader': data.uploader.name
                 }
 
                 if (song.hasOwnProperty('customData')) {
