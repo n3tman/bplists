@@ -62,8 +62,8 @@ async function processSongs(json) {
 
                 songList.push(resultSong);
 
-                if (!mappers.includes(data.uploader.username)) {
-                    mappers.push(data.uploader.username);
+                if (!mappers.includes(data.uploader.name)) {
+                    mappers.push(data.uploader.name);
                 }
             } else {
                 songList.push({
