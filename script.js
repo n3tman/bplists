@@ -1,4 +1,5 @@
 var listJson = {};
+var coverImage = '';
 var thumbImage = '';
 
 function sleep(ms) {
@@ -73,7 +74,7 @@ async function processSongs(json) {
                     statusText.value = 'Done! Sending formatted file back to you. Don\'t forget to copy API text below and paste it to the Discord.';
                 } else {
                     statusText.style.color = '#c83838';
-                    statusText.value = 'Done with errors. Some maps are probably unavailable. Hashes: ' + errors.join(', ');
+                    statusText.value = 'Done with errors. Some maps are probably unavailable: ' + errors.join(', ');
                 }
 
                 document.querySelector('#mappers').value = mappers.length;
@@ -102,7 +103,7 @@ async function processSongs(json) {
                     [JSON.stringify(resultPlaylist, null, 4)],
                     {type: 'text/plain;charset=utf-8'}
                 );
-                saveAs(blob, fileName);
+                saveAs(blob, fileName, true);
 
                 var apiJson = {
                     'playlistTitle': title,
@@ -199,7 +200,7 @@ Dropzone.options.upload = {
     addRemoveLinks: true,
     thumbnailWidth: 200,
     thumbnailHeight: 200,
-    dictDefaultMessage: 'Drop your <b>.bplist</b> here<br>(or click to choose a file)'
+    dictDefaultMessage: 'Drop your <b>.bplist</b> file here<br>or leave the field empty to create a list'
 };
 
 Dropzone.options.thumb = {
@@ -219,9 +220,31 @@ Dropzone.options.thumb = {
         reader.readAsDataURL(file);
     },
     acceptedFiles: 'image/*',
-    maxFilesize: 0.04, // MB
+    maxFilesize: 0.05, // MB
     addRemoveLinks: true,
-    dictDefaultMessage: 'Drop a small 300x300px cover image here<br>(or click to choose a file)'
+    dictDefaultMessage: 'Drop a <b>small</b> ~300x300px <b>cover</b> image<br>or click here to choose a file'
+};
+
+Dropzone.options.cover = {
+    url: '/',
+    init: function () {
+        this.on('addedfile', function () {
+            if (this.files.length > 1) {
+                this.removeFile(this.files[0]);
+            }
+        });
+    },
+    accept: function (file, done) {
+        var reader = new FileReader();
+        reader.addEventListener('load', function () {
+            coverImage = reader.result;
+        });
+        reader.readAsDataURL(file);
+    },
+    acceptedFiles: 'image/*',
+    maxFilesize: 0.9, // MB
+    addRemoveLinks: true,
+    dictDefaultMessage: 'Drop a square <b>cover</b> image (max 900 KB)<br>or click here to choose a file'
 };
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -237,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
             statusText.value = 'Error! Please select a valid .bplist first';
         } else if (thumbFiles.length === 0 || thumbFiles[0].status === 'error') {
             statusText.style.color = '#c83838';
-            statusText.value = 'Error! Please select a small cover first (file size should be under 40 KB)';
+            statusText.value = 'Error! Please select a small cover first (file size should be under 50 KB)';
         } else {
             statusText.removeAttribute('style');
             statusText.value = '';
