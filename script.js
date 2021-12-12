@@ -22,7 +22,8 @@ async function processSongs(json) {
     var progress = document.querySelector('#progress');
     var statusText = document.querySelector('#status');
     var submit = document.querySelector('#submit');
-    var apiUrl = 'https://api.beatsaver.com/maps/hash/';
+    var apiHashUrl = 'https://api.beatsaver.com/maps/hash/';
+    var apiKeyUrl = 'https://api.beatsaver.com/maps/id/';
     var listPath = 'https://bsaber.com/PlaylistAPI/';
 
     var songList = [];
@@ -32,15 +33,28 @@ async function processSongs(json) {
     submit.classList.add('is-loading');
 
     await asyncForEach(json.songs, function (song) {
-        var hash = song.hash.toLowerCase();
+        var hash = '';
+        var key = '';
+        var fetchUrl = '';
 
         curNum--;
         progress.value = Math.round((songNum - curNum) * 100 / songNum)
         statusText.value = 'Fetching info from BeatSaver [' + (songNum - curNum) + '/' + songNum + ']';
 
-        fetch(apiUrl + hash).then(function (response) {
+        if (song.hasOwnProperty('key')) {
+            key = song.key.toLowerCase();
+            fetchUrl = apiKeyUrl + key;
+        } else if (song.hasOwnProperty('hash')) {
+            hash = song.hash.toLowerCase();
+            fetchUrl = apiHashUrl + hash;
+        } else {
+            errors.push('No key or hash');
+            return true;
+        }
+
+        fetch(fetchUrl).then(function (response) {
             if (!response.ok) {
-                errors.push(hash);
+                errors.push(key ? key : hash);
             } else {
                 return response.json();
             }
@@ -48,7 +62,7 @@ async function processSongs(json) {
             if (data) {
                 var resultSong = {
                     'key': data.id,
-                    'hash': hash,
+                    'hash': data.versions[0].hash,
                     'name': data.name,
                     'uploader': data.uploader.name
                 }
@@ -64,8 +78,9 @@ async function processSongs(json) {
                 }
             } else {
                 songList.push({
-                    'name': '### ERROR ###',
-                    'hash': hash
+                    'key': key,
+                    'hash': hash,
+                    'name': '### ERROR ###'
                 });
             }
 
@@ -73,8 +88,7 @@ async function processSongs(json) {
                 if (errors.length === 0) {
                     statusText.value = 'Done! Sending formatted file back to you. Don\'t forget to copy API text below and paste it to the Discord.';
                 } else {
-                    statusText.style.color = '#c83838';
-                    statusText.value = 'Done with errors. Some maps are probably unavailable: ' + errors.join(', ');
+                    showSubmitError('Done with errors. Some maps are probably unavailable: ' + errors.join(', '))
                 }
 
                 document.querySelector('#mappers').value = mappers.length;
@@ -85,6 +99,10 @@ async function processSongs(json) {
                 var date = document.querySelector('#date').value;
                 var category = document.querySelector('#category').value;
                 var image = listJson.hasOwnProperty('image') ? listJson.image : '';
+
+                if (coverImage) {
+                    image = coverImage;
+                }
 
                 var fileName = date.substring(2) + '_' + slugify(title, {lower: true, strict: true}) +
                     '_' + slugify(author, {lower: true, strict: true}) + '.bplist';
@@ -176,10 +194,10 @@ Dropzone.options.upload = {
             document.querySelector('#progress').value = 0;
             document.querySelector('#status').removeAttribute('style');
 
-            var thumbRemove = document.querySelector('.thumb .dz-remove');
-            if (thumbRemove) {
-                thumbRemove.click();
-            }
+            var fileRemove = document.querySelectorAll('.dz-remove');
+            fileRemove.forEach(function (button) {
+                button.click();
+            });
         });
     },
     accept: function (file, done) {
@@ -211,8 +229,11 @@ Dropzone.options.thumb = {
                 this.removeFile(this.files[0]);
             }
         });
+        this.on('removedfile', function () {
+            thumbImage = '';
+        });
     },
-    accept: function (file, done) {
+    accept: function (file) {
         var reader = new FileReader();
         reader.addEventListener('load', function () {
             thumbImage = reader.result;
@@ -222,7 +243,7 @@ Dropzone.options.thumb = {
     acceptedFiles: 'image/*',
     maxFilesize: 0.05, // MB
     addRemoveLinks: true,
-    dictDefaultMessage: 'Drop a <b>small</b> ~300x300px <b>cover</b> image<br>or click here to choose a file'
+    dictDefaultMessage: 'Drop a <b>small</b> ~300x300px <b>cover</b> image (max 50 KB)<br>or click here to choose a file'
 };
 
 Dropzone.options.cover = {
@@ -233,8 +254,11 @@ Dropzone.options.cover = {
                 this.removeFile(this.files[0]);
             }
         });
+        this.on('removedfile', function () {
+            coverImage = '';
+        });
     },
-    accept: function (file, done) {
+    accept: function (file) {
         var reader = new FileReader();
         reader.addEventListener('load', function () {
             coverImage = reader.result;
@@ -247,23 +271,33 @@ Dropzone.options.cover = {
     dictDefaultMessage: 'Drop a square <b>cover</b> image (max 900 KB)<br>or click here to choose a file'
 };
 
+function showSubmitError(message) {
+    var statusText = document.querySelector('#status');
+    if (message) {
+        statusText.style.color = '#c83838';
+        statusText.value = message;
+    } else {
+        statusText.removeAttribute('style');
+        statusText.value = '';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#form').addEventListener('submit', function (e) {
         e.preventDefault();
 
         var listFiles = document.querySelector('#upload').dropzone.files;
         var thumbFiles = document.querySelector('#thumb').dropzone.files;
-        var statusText = document.querySelector('#status');
+        var coverFiles = document.querySelector('#cover').dropzone.files;
 
         if (listFiles.length === 0 || listFiles[0].status === 'error') {
-            statusText.style.color = '#c83838';
-            statusText.value = 'Error! Please select a valid .bplist first';
+            showSubmitError('Error! Please select a valid .bplist first');
         } else if (thumbFiles.length === 0 || thumbFiles[0].status === 'error') {
-            statusText.style.color = '#c83838';
-            statusText.value = 'Error! Please select a small cover first (file size should be under 50 KB)';
+            showSubmitError('Error! Please select a small cover first (file size should be under 50 KB)');
+        } else if (coverFiles.length > 0 && coverFiles[0].status === 'error') {
+            showSubmitError('Error! Please select a proper cover image (under 900 KB)');
         } else {
-            statusText.removeAttribute('style');
-            statusText.value = '';
+            showSubmitError('');
             processSongs(listJson);
         }
     });
