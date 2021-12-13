@@ -40,8 +40,6 @@ async function processSongs(json) {
         mapArray = json.songs;
     }
 
-    console.log(mapArray);
-
     var songNum = mapArray.length;
     var curNum = songNum;
 
@@ -337,8 +335,14 @@ document.addEventListener('DOMContentLoaded', function () {
     $tagEditor.tagEditor({
         delimiter: ',; ',
         placeholder: 'Enter map keys (preferable) or hashes',
+        animateDelete: 100,
         onChange: function(field, editor, tags) {
             document.querySelector('#songs').value = tags.length;
+        },
+        beforeTagSave: function(field, editor, tags, tag, val) {
+            if (val.includes('bsaber.com') || val.includes('beatsaver.com')) {
+                return val.replace(/http.*\/(\w+)\/?/, '$1');
+            }
         },
     });
 
