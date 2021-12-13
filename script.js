@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     $('#tags').tagEditor({
-        delimiter: ', ', /* space and comma */
+        delimiter: ',; ',
         placeholder: 'Enter maps keys (preferable) or hashes'
     });
 });
