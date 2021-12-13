@@ -1,6 +1,7 @@
 var listJson = {};
 var coverImage = '';
 var thumbImage = '';
+var $tagEditor;
 
 function sleep(ms) {
     return new Promise(function (resolve) {
@@ -16,8 +17,9 @@ async function asyncForEach(arr, callback, ms) {
 }
 
 async function processSongs(json) {
-    var songNum = json.songs.length;
-    var curNum = songNum;
+    var mapArray;
+    var isJson = json.songs && json.songs.length;
+    var idTags = $tagEditor.tagEditor('getTags')[0].tags;
     var apiText = document.querySelector('#api');
     var progress = document.querySelector('#progress');
     var statusText = document.querySelector('#status');
@@ -32,7 +34,18 @@ async function processSongs(json) {
 
     submit.classList.add('is-loading');
 
-    await asyncForEach(json.songs, function (song) {
+    if (!isJson || (isJson && (idTags.length !== json.songs.length))) {
+        mapArray = idTags;
+    } else {
+        mapArray = json.songs;
+    }
+
+    console.log(mapArray);
+
+    var songNum = mapArray.length;
+    var curNum = songNum;
+
+    await asyncForEach(mapArray, function (song) {
         var hash = '';
         var key = '';
         var fetchUrl = '';
@@ -47,6 +60,12 @@ async function processSongs(json) {
         } else if (song.hasOwnProperty('hash')) {
             hash = song.hash.toLowerCase();
             fetchUrl = apiHashUrl + hash;
+        } else if (song.trim().length === 40) {
+            hash = song.toLowerCase();
+            fetchUrl = apiHashUrl + hash;
+        } else if (song.trim().length) {
+            key = song.toLowerCase();
+            fetchUrl = apiKeyUrl + key;
         } else {
             errors.push('No key or hash');
             return true;
@@ -171,11 +190,22 @@ function processPlaylist(json, name) {
     }
     document.querySelector('#date').value = date.toISOString().substring(0, 10);
 
-    if (json.hasOwnProperty('songs') && json.songs.length) {
-        document.querySelector('#songs').value = json.songs.length;
-    }
-
     listJson = json;
+
+    json.songs.forEach(function (song) {
+        if (song.hasOwnProperty('key')) {
+            $tagEditor.tagEditor('addTag', song.key, true);
+        } else if (song.hasOwnProperty('hash')) {
+            $tagEditor.tagEditor('addTag', song.hash, true);
+        }
+    });
+}
+
+function clearTags() {
+    var tags = $tagEditor.tagEditor('getTags')[0].tags;
+    tags.forEach(function (tag) {
+        $tagEditor.tagEditor('removeTag', tag, true);
+    });
 }
 
 Dropzone.options.upload = {
@@ -198,6 +228,8 @@ Dropzone.options.upload = {
             fileRemove.forEach(function (button) {
                 button.click();
             });
+
+            clearTags();
         });
     },
     accept: function (file, done) {
@@ -243,7 +275,7 @@ Dropzone.options.thumb = {
     acceptedFiles: 'image/*',
     maxFilesize: 0.05, // MB
     addRemoveLinks: true,
-    dictDefaultMessage: 'Drop a <b>small</b> ~300x300px <b>cover</b> image (max 50 KB)<br>or click here to choose a file'
+    dictDefaultMessage: 'Drop a <b>small cover</b> image (max 50 KB)<br>or click here to choose a file'
 };
 
 Dropzone.options.cover = {
@@ -287,13 +319,12 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
 
         var listFiles = document.querySelector('#upload').dropzone.files;
-        var thumbFiles = document.querySelector('#thumb').dropzone.files;
         var coverFiles = document.querySelector('#cover').dropzone.files;
 
-        if (listFiles.length === 0 || listFiles[0].status === 'error') {
+        if (listFiles.length > 0 && listFiles[0].status === 'error') {
             showSubmitError('Error! Please select a valid .bplist first');
-        } else if (thumbFiles.length === 0 || thumbFiles[0].status === 'error') {
-            showSubmitError('Error! Please select a small cover first (file size should be under 50 KB)');
+        } else if ($tagEditor.tagEditor('getTags')[0].tags.length === 0) {
+            showSubmitError('Error! Please add at least one map ID');
         } else if (coverFiles.length > 0 && coverFiles[0].status === 'error') {
             showSubmitError('Error! Please select a proper cover image (under 900 KB)');
         } else {
@@ -302,8 +333,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    $('#tags').tagEditor({
+    $tagEditor = $('#tags');
+    $tagEditor.tagEditor({
         delimiter: ',; ',
-        placeholder: 'Enter maps keys (preferable) or hashes'
+        placeholder: 'Enter map keys (preferable) or hashes',
+        onChange: function(field, editor, tags) {
+            document.querySelector('#songs').value = tags.length;
+        },
+    });
+
+    $('#remove-all').click(function() {
+        clearTags();
     });
 });
