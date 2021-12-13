@@ -301,4 +301,9 @@ document.addEventListener('DOMContentLoaded', function () {
             processSongs(listJson);
         }
     });
+
+    $('#tags').tagEditor({
+        delimiter: ', ', /* space and comma */
+        placeholder: 'Enter maps keys (preferable) or hashes'
+    });
 });
